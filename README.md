@@ -55,6 +55,12 @@ yaw -l                           prints the current installed packages
 yaw -v                           prints the current yaw version
 ```
 
+## Example
+
+```bash
+tbd
+```
+
 ## Configuration
 
 All yaw system defaults can be overwritten by specifying the following 
