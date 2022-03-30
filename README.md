@@ -3,26 +3,25 @@
 Yaw is a nautical term that describes the six degrees of freedom that a ship,
 boat or any other craft can experience. Similarly, UNIX package management can
 be broken into six core operations, which describe how a user can interact with
-a package: creation, building, installation, verification, inspection and  
-removal. <code>yaw</code>, the package manager, attempts to accomplish these 
+a package: creation, building, installation, verification, inspection and 
+removal. `yaw`, the package manager, attempts to accomplish these 
 tasks with as little "fluff" as possible.
 
 ![yaw](https://upload.wikimedia.org/wikipedia/commons/5/55/USS_Langley_%28CVL-27%29_and_battleship_in_typhoon_1944.jpeg)
 
-<code>yaw</code> is considered a minimal viable product; therefore, it is up to
+`yaw` is considered a minimal viable product; therefore, it is up to
 the user to expand the functionality.  Included is a barebones RFC 1952
-compliant tarball (*.tar.gz) expander and web socket downloader (HTTP only). 
-These basic utilities allow <code>yaw</code> to be self-sufficient and handle 
+compliant tarball (\*.tar.gz) expander and web socket downloader (HTTP only). 
+These basic utilities allow `yaw` to be self-sufficient and handle 
 most Github project repositories.
 
 There is no infrastructure, community or central repositories associated with 
 his package manager. Instead, the user intended to be self-sufficient and the 
 repository to be hosted local to the target machine.
 
-In order to manage the actual package build process, <code>yaw</code> uses 
-shell script to specify the appropriate commands. The built binaries (located 
-in <code>YAW_PATH</code>) are then symbolically linked to the target 
-installation path. 
+In order to manage the actual package build process, `yaw` uses shell script 
+to specify the appropriate commands. The built binaries (located in 
+`YAW_PATH`) are then symbolically linked to the target installation path. 
 
 Package validation is performed by generating a checksum using the CRC32
 algorithm and verifying that the downloaded tarball checksum matches the source
@@ -31,12 +30,14 @@ user will not be allowed to proceed with installation.
 
 ## Installaton
 
-Using a POSIX C compiler:
+Using a POSIX C compiler and a user account with root permissions (i.e `sudo`):
 
-	$ git clone http://github.com/mcpcpc/yaw
-	$ cd ./yaw
-	$ make
-	$ make install
+```bash
+$ git clone http://github.com/mcpcpc/yaw
+$ cd ./yaw
+$ make
+$ make install
+```
 
 ## Usage
 
@@ -67,6 +68,13 @@ YAW_PATH                         working directory for project files
 ## Licensing
 
 Free and (forever) open source under the MIT License.
+
+## Credit
+
+Special thanks to following projects and respositories, which many of the
+functions are based from:
+
+* [kisslinux](http://github.com/kisslinux)
 
 ## Contact
 
