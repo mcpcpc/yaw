@@ -74,8 +74,8 @@ Free and (forever) open source under the MIT License.
 Special thanks to following projects and respositories, which many of the
 functions are based from:
 
-* [kisslinux](http://github.com/kisslinux) (Dylan Araps)
-* [uget](https://github.com/OpenIPC/uget) (Dmitry Ilyin)
+* [kisslinux](http://github.com/kisslinux) by Dylan Araps
+* [uget](https://github.com/OpenIPC/uget) by Dmitry Ilyin
 * [RFC 1952](https://www.ietf.org/rfc/rfc1952.txt)
 * [untar](https://opensource.apple.com/source/libarchive/libarchive-32/libarchive/contrib/untar.c.auto.html) (Apple Inc.)
 
