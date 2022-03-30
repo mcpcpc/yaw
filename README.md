@@ -4,8 +4,8 @@ Yaw is a nautical term that describes the six degrees of freedom that a ship,
 boat or any other craft can experience. Similarly, UNIX package management can
 be broken into six core operations, which describe how a user can interact with
 a package: creation, building, installation, verification, inspection and 
-removal. `yaw`, the package manager, attempts to accomplish these 
-tasks with as little "fluff" as possible.
+removal. This package manager attempts to accomplish these tasks with as little
+"fluff" as possible.
 
 ![yaw](https://upload.wikimedia.org/wikipedia/commons/5/55/USS_Langley_%28CVL-27%29_and_battleship_in_typhoon_1944.jpeg)
 
