@@ -59,6 +59,7 @@ verify_checksum(const char *p)
 static int
 get_path(char *url, char *path)
 {
+	int err = 0;
 	char *u = url, *path = NULL;
 	while (*u) {
 		if (*u == '/') {
@@ -68,8 +69,8 @@ get_path(char *url, char *path)
 		}
 		u++;
 	}
-	if (*u == NULL) return 1;
-	return 0;
+	if (*u == NULL) err = 1;
+	return err;
 }
 
 static int
@@ -86,12 +87,12 @@ get_http_response_code(char *buffer)
 //static void
 //untar(FILE *a, const char *path)
 static void
-package_untar(int a, const char *path)
+package_untar(char *tar, char *path)
 {
 	char buff[512];
 	//FILE *f = NULL;
 	size_t bytes_read;
-	int filesize;
+	int filesize, a = open(tar, O_RDONLY;
 	printf("Extracting from %s\n", path);
 	for (;;) {
 		//bytes_read = fread(buff, 1, 512, a);
@@ -184,19 +185,21 @@ package_download(pkg package)
 	if ((err = getaddrinfo(package->host, "80", &hints, &res)) != 0) {
 		perror("getaddrinfo");
 		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
-		return 3; //ERR_GETADDRINFO
+		return 3;
 	}
 	struct addrinfo *p;
 	for (p = res; p != NULL; p = p->ai_next) {
 		conn = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 		if (conn < 0) {
-			perror("socket");
+			//perror("socket");
+			fprintf(stderr, "socket\n");
 			continue;
 		}
 		err = connect(conn, p->ai_addr, p->ai_addrlen);
 		if (err < 0) {
 			close(conn);
-			perror("connect");
+			//perror("connect");
+			fprintf(stderr, "connect\n");
 			continue;
 		}
 		break;
@@ -214,7 +217,7 @@ package_download(pkg package)
 	int tosent = strlen(buf), header = 1, nrecvd;
 	int nsent = send(conn, buf, tosent, 0);
 	if (nsent != tosent) {
-		return 5; //ERR_SEND
+		return 5;
 	}
 	printf("[tarball] download started\n");
 	while ((nrecvd = recv(conn, buf, sizeof(buf), 0))) {
@@ -240,10 +243,31 @@ package_download(pkg package)
 }
 
 int
+package_extract(pkg package)
+{
+	int err = 0;
+	return err;
+}
+
+int
+package_write(pkg package)
+{
+	int err = 0, fd = 0;
+	return err;
+}
+
+int
+package_read(char *name)
+{
+	int err = 0, fd = 0;
+	return err;
+}
+
+int
 package_create(pkg package, char *name, char *source_url, char *version)
 {
 	char *path, *host = source_url;
-	int ret = get_path(host, path);
+	int err = get_path(host, path);
 	if (ret == 0) {
 		package = malloc(sizeof(pkg_t));
 		package->name = name;
@@ -253,19 +277,21 @@ package_create(pkg package, char *name, char *source_url, char *version)
 		package->build = DEFAULT_TEMPLATE;
 		package->checksum = 0;
 	}
-	return ret;
+	return err;
 }
 
 int
 package_destroy(pkg package)
 {
+	int err = 0;
 	free(package);
-	return 0;
+	return err;
 }
 
 int
 package_print(pkg package)
 {
+	int err = 0;
 	puts("[package details]");
 	printf("name:     %s\n", package->name);
 	printf("host:     %s\n", package->host);
@@ -273,7 +299,7 @@ package_print(pkg package)
 	printf("version:  %s\n", package->version);
 	printf("checksum: %ld\n", package->name);
 	printf("build:    %s\n", package->name);
-	return 0;
+	return err;
 }
 
 int
@@ -281,17 +307,19 @@ main(int argc, char **argv)
 {
 	int err = 0;
 	if (argc > 1 && argv[1][0] == '-') {
+		pkg package;
 		switch(argv[1][1]) {
 		case 'v':
 			puts('Copyright (C) 2022, Michael Czigler')
 			break;
 		case 'n':
-			err = package_create(argv[2], argv[3], argv[4]);
+			err = package_create(package, argv[2], argv[3], argv[4]);
 			break;
 		case 'c':
-			err = package_verify(argv[2]);
+			err = package_verify(package, argv[2]);
 			break;
 		default:
+			puts("yaw -v|n|c|i|r|l");
 			break;
 		}
 	}
