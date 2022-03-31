@@ -5,7 +5,56 @@
  * Copyright (C) 2022 Michael Czigler
  */
 
+static void
+create_dir(char *pathname, int mode)
+{
+	if (pathname[strlen(pathname) - 1] == '/') {
+		pathname[strlen(pathname) - 1] = '\0';
+	}	
+	int r = mkdir(pathname, mode);
+	if (r != 0) {
+		char *p = strrchr(pathname, '/');
+		if (p != NULL) {
+			*p = '\0';
+			create_dir(pathname, 0755);
+			*p = '/';
+			r = mkdir(pathname, mode);
+		}
+	}
+	if (r != 0) {
+		fprintf(stderr, "Could not create directory %s\n", pathname);
+	}
+}
 
+static int
+create_file(char *pathname, int mode)
+{
+	int	f = open(pathname, O_CREAT|O_RDWR|O_APPEND, 0640);
+	if (f == -1) {
+		char *p = strrchr(pathname, '/');
+		if (p != NULL) {
+			*p = '\0';
+			create_dir(pathname, 0755);
+			*p = '/';
+			f = open(pathname, O_CREAT|O_RDWR|O_APPEND, 0640);
+		}
+	}
+	return (f);
+}
+
+static int
+verify_checksum(const char *p)
+{
+	int n, u = 0;
+	for (n = 0; n < 512; ++n) {
+		if (n < 148 || n > 155) {
+			u += ((unsigned char *)p)[n];
+		} else {
+			u += 0x20;
+		}
+	}
+	return (u == parseoct(p + 148, 8));
+}
 
 static int
 get_path(char *url, char *path)
@@ -34,7 +83,164 @@ get_http_response_code(char *buffer)
 	return code;
 }
 
-int package_create(pkg package, char *name, char *source_url, char *version)
+//static void
+//untar(FILE *a, const char *path)
+static void
+package_untar(int a, const char *path)
+{
+	char buff[512];
+	//FILE *f = NULL;
+	size_t bytes_read;
+	int filesize;
+	printf("Extracting from %s\n", path);
+	for (;;) {
+		//bytes_read = fread(buff, 1, 512, a);
+		bytes_read = read(a, buff, 512);
+		if (bytes_read < 512) {
+			fprintf(stderr,
+			    "Short read on %s: expected 512, got %d\n",
+			    path, bytes_read);
+			return;
+		}
+		if (is_end_of_archive(buff)) {
+			printf("End of %s\n", path);
+			return;
+		}
+		if (!verify_checksum(buff)) {
+			fprintf(stderr, "Checksum failure\n");
+			return;
+		}
+		filesize = parseoct(buff + 124, 12);
+		switch (buff[156]) {
+		case '1':
+			printf(" Ignoring hardlink %s\n", buff);
+			break;
+		case '2':
+			printf(" Ignoring symlink %s\n", buff);
+			break;
+		case '3':
+			printf(" Ignoring character device %s\n", buff);
+				break;
+		case '4':
+			printf(" Ignoring block device %s\n", buff);
+			break;
+		case '5':
+			printf(" Extracting dir %s\n", buff);
+			create_dir(buff, parseoct(buff + 100, 8));
+			filesize = 0;
+			break;
+		case '6':
+			printf(" Ignoring FIFO %s\n", buff);
+			break;
+		default:
+			printf(" Extracting file %s\n", buff);
+			f = create_file(buff, parseoct(buff + 100, 8));
+			break;
+		}
+		while (filesize > 0) {
+			//bytes_read = fread(buff, 1, 512, a);
+			bytes_read = read(a, buff, 512);
+			if (bytes_read < 512) {
+				fprintf(stderr,
+				    "Short read on %s: Expected 512, got %d\n",
+				    path, bytes_read);
+				return;
+			}
+			if (filesize < 512) {
+				bytes_read = filesize;
+			}	
+			//if (f != NULL) {
+			if (f != -1) {
+				//if (fwrite(buff, 1, bytes_read, f) != bytes_read)
+				if (write(f, buff, bytes_read) != bytes_read)
+				{
+					fprintf(stderr, "Failed write\n");
+					fclose(f);
+					//f = NULL;
+					f = -1;
+				}
+			}
+			filesize -= bytes_read;
+		}
+		//if (f != NULL) {
+			//fclose(f);
+		if (f != -1) {	
+			close(f);
+			//f = NULL;
+			f = -1;
+		}
+	}
+}
+
+int
+package_download(pkg package)
+{
+	if (chdir(package->name) < 0) puts("directory does not exist");
+	int err, conn;
+	struct addrinfo *res, hints = {
+		.ai_family = AF_UNSPEC,
+		.ai_socktype = SOCK_STREAM
+	};
+	if ((err = getaddrinfo(package->host, "80", &hints, &res)) != 0) {
+		perror("getaddrinfo");
+		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(err));
+		return 3; //ERR_GETADDRINFO
+	}
+	struct addrinfo *p;
+	for (p = res; p != NULL; p = p->ai_next) {
+		conn = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+		if (conn < 0) {
+			perror("socket");
+			continue;
+		}
+		err = connect(conn, p->ai_addr, p->ai_addrlen);
+		if (err < 0) {
+			close(conn);
+			perror("connect");
+			continue;
+		}
+		break;
+	}
+	freeaddrinfo(res);
+	int fd = open("./tarball", O_WRONLY | O_CREAT | O_TRUNC, 0640);	
+	char buf[4096];
+	strcpy(buf, "GET /");
+	if (package->path) {
+		strncat(buf, package->path, sizeof(buf) - strlen(buf) - 1);
+  	}
+  	strncat(buf, " HTTP/1.0\r\nHost: ", sizeof(buf) - strlen(buf) - 1);
+	strncat(buf, package->host, sizeof(buf) - strlen(buf) - 1);
+  	strncat(buf, "\r\n\r\n", sizeof(buf) - strlen(buf) - 1);
+	int tosent = strlen(buf), header = 1, nrecvd;
+	int nsent = send(conn, buf, tosent, 0);
+	if (nsent != tosent) {
+		return 5; //ERR_SEND
+	}
+	printf("[tarball] download started\n");
+	while ((nrecvd = recv(conn, buf, sizeof(buf), 0))) {
+		char *ptr = buf;
+		if (header) {
+			ptr = strstr(buf, "\r\n\r\n");
+			if (!ptr) continue;
+			int rcode = get_http_respcode(buf);
+			if (rcode / 100 != 2) {
+				return rcode / 100 * 10 + rcode % 10;
+			}	
+			header = 0;
+			ptr += 4;
+			nrecvd -= ptr - buf;
+		}
+		printf("bytes received: %d\n", nrecvd);
+		write(fd, ptr, nrecvd);
+	}
+	printf("[tarball] download complete\n");
+	close(fd);
+	close(conn);
+	return 0;
+}
+
+int
+package_create(pkg package, char *name, char *source_url, char *version)
 {
 	char *path, *host = source_url;
 	int ret = get_path(host, path);
@@ -50,13 +256,15 @@ int package_create(pkg package, char *name, char *source_url, char *version)
 	return ret;
 }
 
-int package_destroy(pkg package)
+int
+package_destroy(pkg package)
 {
 	free(package);
 	return 0;
 }
 
-int package_print(pkg package)
+int
+package_print(pkg package)
 {
 	puts("[package details]");
 	printf("name:     %s\n", package->name);
@@ -67,8 +275,6 @@ int package_print(pkg package)
 	printf("build:    %s\n", package->name);
 	return 0;
 }
-
-
 
 int
 main(int argc, char **argv)
