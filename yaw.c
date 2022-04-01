@@ -292,7 +292,7 @@ package_create(pkg package, char *name, char *source_url, char *version)
 		package->version = version;
 		package->host = host;
 		package->path = path;
-		package->build = DEFAULT_TEMPLATE;
+		package->build = DEFAULT_BUILD;
 		package->checksum = 0;
 	}
 	return err;

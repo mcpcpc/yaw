@@ -8,6 +8,8 @@
 #include <sys/stat.h>
 #include <netdb.h>
 
+#define DEFAULT_BUILD "make\nmake install"
+
 typedef struct PACKAGE {
 	char *name;
 	char *host;
