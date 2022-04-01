@@ -6,7 +6,7 @@
  */
 
 static int
-parseoct(const char *p, size_t n)
+parseoct(char *p, size_t n)
 {
 	int i = 0;
 
@@ -21,7 +21,17 @@ parseoct(const char *p, size_t n)
 		--n;
 	}
 	return (i);
-}	
+}
+
+static int
+is_end_of_archive(char *p)
+{
+	int n;
+	for (n = 511; n >= 0; --n)
+		if (p[n] != '\0')
+			return (0);
+	return (1);
+}
 
 static void
 create_dir(char *pathname, int mode)
@@ -92,7 +102,7 @@ get_path(char *url, char *path)
 }
 
 static int
-get_http_response_code(char *buffer)
+get_http_response(char *buffer)
 {
 	char proto[4096], descr[4096];
 	int code = 0;
@@ -334,7 +344,7 @@ main(int argc, char **argv)
 			err = package_create(package, argv[2], argv[3], argv[4]);
 			break;
 		case 'c':
-			err = package_verify(package, argv[2]);
+			err = package_verify(package);
 			break;
 		default:
 			puts("yaw -v|n|c|i|r|l");
