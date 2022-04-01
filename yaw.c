@@ -102,7 +102,7 @@ get_path(char *url, char *path)
 }
 
 static int
-get_http_response(char *buffer)
+get_http_respcode(char *buffer)
 {
 	char proto[4096], descr[4096];
 	int code = 0;
@@ -120,7 +120,7 @@ package_untar(char *tar, char *path)
 	char buff[512];
 	//FILE *f = NULL;
 	size_t bytes_read;
-	int filesize, a = open(tar, O_RDONLY);
+	int f, filesize, a = open(tar, O_RDONLY);
 	printf("Extracting from %s\n", path);
 	for (;;) {
 		//bytes_read = fread(buff, 1, 512, a);
