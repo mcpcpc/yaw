@@ -286,7 +286,7 @@ package_create(pkg package, char *name, char *source_url, char *version)
 {
 	char *path, *host = source_url;
 	int err = get_path(host, path);
-	if (ret == 0) {
+	if (err == 0) {
 		package = malloc(sizeof(pkg_t));
 		package->name = name;
 		package->version = version;
