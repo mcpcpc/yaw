@@ -184,7 +184,8 @@ package_untar(char *tar, char *path)
 				if (write(f, buff, bytes_read) != bytes_read)
 				{
 					fprintf(stderr, "Failed write\n");
-					fclose(f);
+					//fclose(f);
+					close(f);
 					//f = NULL;
 					f = -1;
 				}
