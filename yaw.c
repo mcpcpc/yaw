@@ -332,6 +332,13 @@ package_print(pkg package)
 }
 
 int
+package_verify(pkg package)
+{
+	int err = 0;
+	return err;
+}
+
+int
 main(int argc, char **argv)
 {
 	int err = 0;
@@ -342,10 +349,12 @@ main(int argc, char **argv)
 			puts("Copyright (C) 2022, Michael Czigler");
 			break;
 		case 'n':
-			err = package_create(package, argv[2], argv[3], argv[4]);
+			err += package_create(package, argv[2], argv[3], argv[4]);
+			err += package_write(package);
+			err += package_destroy(package);
 			break;
 		case 'c':
-			err = package_verify(package);
+			err += package_verify(package);
 			break;
 		default:
 			puts("yaw -v|n|c|i|r|l");
