@@ -84,11 +84,11 @@ verify_checksum(char *p)
 	return (u == parseoct(p + 148, 8));
 }
 
-static int
-get_path(char *url, char *path)
+static char *
+get_path(char *url)
 {
 	int err = 0;
-	char *u = url;
+	char *u = url, *path = NULL;
 	while (*u) {
 		if (*u == '/') {
 			*u++ == '\0';
@@ -97,8 +97,7 @@ get_path(char *url, char *path)
 		}
 		u++;
 	}
-	if (*u == '\0') err = 1;
-	return err;
+	return path;
 }
 
 static int
@@ -220,14 +219,12 @@ package_download(pkg package)
 	for (p = res; p != NULL; p = p->ai_next) {
 		conn = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 		if (conn < 0) {
-			//perror("socket");
 			fprintf(stderr, "socket\n");
 			continue;
 		}
 		err = connect(conn, p->ai_addr, p->ai_addrlen);
 		if (err < 0) {
 			close(conn);
-			//perror("connect");
 			fprintf(stderr, "connect\n");
 			continue;
 		}
@@ -285,18 +282,19 @@ package_write(pkg package)
 	return err;
 }
 
-int
+pkg
 package_read(char *name)
 {
-	int err = 0, fd = 0;
-	return err;
+	int fd = 0;
+	pkg package;
+	return package;
 }
 
-int
-package_create(pkg package, char *name, char *source_url, char *version)
+pkg
+package_create(char *name, char *source_url, char *version)
 {
-	char *path, *host = source_url;
-	int err = get_path(host, path);
+	char *host = source_url;
+	char *path = get_path(host);
 	if (err == 0) {
 		package = malloc(sizeof(pkg_t));
 		package->name = name;
@@ -306,7 +304,7 @@ package_create(pkg package, char *name, char *source_url, char *version)
 		package->build = DEFAULT_BUILD;
 		package->checksum = 0;
 	}
-	return err;
+	return package;
 }
 
 int
@@ -343,19 +341,20 @@ main(int argc, char **argv)
 {
 	int err = 0;
 	if (argc > 1 && argv[1][0] == '-') {
-		pkg package;
 		switch(argv[1][1]) {
 		case 'v':
 			puts("Copyright (C) 2022, Michael Czigler");
 			break;
 		case 'n':
-			err += package_create(package, argv[2], argv[3], argv[4]);
+			pkg package = package_create(package, argv[2], argv[3], argv[4]);
 			err += package_write(package);
 			err += package_print(package);
 			err += package_destroy(package);
 			break;
 		case 'c':
+			pkg package = package_read(argv[2]);
 			err += package_verify(package);
+			err += package_destroy(package);
 			break;
 		default:
 			puts("yaw -v|n|c|i|r|l");

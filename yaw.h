@@ -21,7 +21,7 @@ typedef struct PACKAGE {
 	uint32_t checksum;
 } pkg_t, *pkg;
 
-int package_create(pkg package, char *name, char *source_url, char *version);
+pkg package_create(char *name, char *source_url, char *version);
 int package_destroy(pkg package);
 int package_download(pkg package);
 int package_verify(pkg package);
