@@ -111,18 +111,14 @@ get_http_respcode(char *buffer)
 	return code;
 }
 
-//static void
-//untar(FILE *a, const char *path)
 static void
 package_untar(char *tar, char *path)
 {
 	char buff[512];
-	//FILE *f = NULL;
 	size_t bytes_read;
 	int f, filesize, a = open(tar, O_RDONLY);
 	printf("Extracting from %s\n", path);
 	for (;;) {
-		//bytes_read = fread(buff, 1, 512, a);
 		bytes_read = read(a, buff, 512);
 		if (bytes_read < 512) {
 			fprintf(stderr,
@@ -166,7 +162,6 @@ package_untar(char *tar, char *path)
 			break;
 		}
 		while (filesize > 0) {
-			//bytes_read = fread(buff, 1, 512, a);
 			bytes_read = read(a, buff, 512);
 			if (bytes_read < 512) {
 				fprintf(stderr,
@@ -177,25 +172,18 @@ package_untar(char *tar, char *path)
 			if (filesize < 512) {
 				bytes_read = filesize;
 			}	
-			//if (f != NULL) {
 			if (f != -1) {
-				//if (fwrite(buff, 1, bytes_read, f) != bytes_read)
 				if (write(f, buff, bytes_read) != bytes_read)
 				{
 					fprintf(stderr, "Failed write\n");
-					//fclose(f);
 					close(f);
-					//f = NULL;
 					f = -1;
 				}
 			}
 			filesize -= bytes_read;
 		}
-		//if (f != NULL) {
-			//fclose(f);
 		if (f != -1) {	
 			close(f);
-			//f = NULL;
 			f = -1;
 		}
 	}
@@ -231,7 +219,7 @@ package_download(pkg package)
 		break;
 	}
 	freeaddrinfo(res);
-	int fd = open("./tarball", O_WRONLY | O_CREAT | O_TRUNC, 0640);	
+	int fd = open("tarball", O_WRONLY | O_CREAT | O_TRUNC, 0640);	
 	char buf[4096];
 	strcpy(buf, "GET /");
 	if (package->path) {
