@@ -71,7 +71,7 @@ create_file(char *pathname, int mode)
 }
 
 static int
-verify_checksum(const char *p)
+verify_checksum(char *p)
 {
 	int n, u = 0;
 	for (n = 0; n < 512; ++n) {
