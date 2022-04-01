@@ -11,11 +11,11 @@
 #define DEFAULT_BUILD "make\nmake install"
 
 typedef struct PACKAGE {
-	char *name;
-	char *host;
-	char *path;
-	char *version;
-	char *build;
+	char    *name;
+	char    *host;
+	char    *path;
+	char    *version;
+	char    *build;
 	uint32_t checksum;
 } pkg_t, *pkg;
 

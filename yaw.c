@@ -315,7 +315,7 @@ package_print(pkg package)
 	printf("host:     %s\n", package->host);
 	printf("path:     %s\n", package->path);
 	printf("version:  %s\n", package->version);
-	printf("checksum: %ld\n", package->checksum);
+	printf("checksum: %d\n", package->checksum);
 	printf("build:    %s\n", package->name);
 	return err;
 }
@@ -328,7 +328,7 @@ main(int argc, char **argv)
 		pkg package;
 		switch(argv[1][1]) {
 		case 'v':
-			puts('Copyright (C) 2022, Michael Czigler')
+			puts("Copyright (C) 2022, Michael Czigler");
 			break;
 		case 'n':
 			err = package_create(package, argv[2], argv[3], argv[4]);
