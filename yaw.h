@@ -1,6 +1,7 @@
 #ifndef __YAW_H
 #define __YAW_H
 
+#include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

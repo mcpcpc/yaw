@@ -5,6 +5,24 @@
  * Copyright (C) 2022 Michael Czigler
  */
 
+static int
+parseoct(const char *p, size_t n)
+{
+	int i = 0;
+
+	while (*p < '0' || *p > '7') {
+		++p;
+		--n;
+	}
+	while (*p >= '0' && *p <= '7' && n > 0) {
+		i *= 8;
+		i += *p - '0';
+		++p;
+		--n;
+	}
+	return (i);
+}	
+
 static void
 create_dir(char *pathname, int mode)
 {
@@ -60,7 +78,7 @@ static int
 get_path(char *url, char *path)
 {
 	int err = 0;
-	char *u = url, *path = NULL;
+	char *u = url;
 	while (*u) {
 		if (*u == '/') {
 			*u++ == '\0';
