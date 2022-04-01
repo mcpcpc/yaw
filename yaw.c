@@ -351,6 +351,7 @@ main(int argc, char **argv)
 		case 'n':
 			err += package_create(package, argv[2], argv[3], argv[4]);
 			err += package_write(package);
+			err += package_print(package);
 			err += package_destroy(package);
 			break;
 		case 'c':
