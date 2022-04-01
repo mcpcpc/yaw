@@ -1,14 +1,15 @@
 #ifndef __YAW_H
 #define __YAW_H
 
+#define _POSIX_C_SOURCE 200809L
+#define DEFAULT_BUILD "make\nmake install"
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <netdb.h>
-
-#define DEFAULT_BUILD "make\nmake install"
 
 typedef struct PACKAGE {
 	char    *name;
