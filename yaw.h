@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <netdb.h>
+#include <unistd.h>
 
 typedef struct PACKAGE {
 	char    *name;
