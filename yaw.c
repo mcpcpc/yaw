@@ -97,7 +97,7 @@ get_path(char *url, char *path)
 		}
 		u++;
 	}
-	if (*u == NULL) err = 1;
+	if (*u == '\0') err = 1;
 	return err;
 }
 
@@ -127,7 +127,7 @@ package_untar(char *tar, char *path)
 		bytes_read = read(a, buff, 512);
 		if (bytes_read < 512) {
 			fprintf(stderr,
-			    "Short read on %s: expected 512, got %d\n",
+			    "Short read on %s: expected 512, got %ld\n",
 			    path, bytes_read);
 			return;
 		}
@@ -171,7 +171,7 @@ package_untar(char *tar, char *path)
 			bytes_read = read(a, buff, 512);
 			if (bytes_read < 512) {
 				fprintf(stderr,
-				    "Short read on %s: Expected 512, got %d\n",
+				    "Short read on %s: Expected 512, got %ld\n",
 				    path, bytes_read);
 				return;
 			}
