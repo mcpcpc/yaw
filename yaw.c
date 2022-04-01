@@ -94,7 +94,7 @@ get_path(char *url, char *path)
 static int
 get_http_response_code(char *buffer)
 {
-	char proto[4096], desc[4096]
+	char proto[4096], desc[4096];
 	int code = 0;
 	if (sscanf(buffer, "%s %d %s", proto, &code, descr) < 2) {
 		code = -1;
