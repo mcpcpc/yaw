@@ -315,7 +315,7 @@ package_print(pkg package)
 	printf("host:     %s\n", package->host);
 	printf("path:     %s\n", package->path);
 	printf("version:  %s\n", package->version);
-	printf("checksum: %ld\n", package->name);
+	printf("checksum: %ld\n", package->checksum);
 	printf("build:    %s\n", package->name);
 	return err;
 }
