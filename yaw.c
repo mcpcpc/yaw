@@ -365,7 +365,7 @@ main(int argc, char **argv)
 			err += package_destroy(package);
 			break;
 		case 'c':
-			pkg package = package_read(argv[2]);
+			package = package_read(argv[2]);
 			err += package_verify(package);
 			err += package_destroy(package);
 			break;
