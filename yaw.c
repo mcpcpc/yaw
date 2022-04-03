@@ -71,6 +71,17 @@ create_file(char *pathname, int mode)
 }
 
 static int
+to_file(int fd, char *buffer)
+{
+	int n = 0;
+	char *b = buffer;
+	while(*b != '\0') {
+		n += write(fd, buffer, 1);
+	}
+	return n;
+}
+
+static int
 verify_checksum(char *p)
 {
 	int n, u = 0;
@@ -266,7 +277,20 @@ package_extract(pkg package)
 int
 package_write(pkg package)
 {
-	int err = 0, fd = 0;
+	int err = 0, n = 0;		
+	mkdir(package->name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);                         
+	chdir(package->name);
+	int fd = create_file("source", 0640);
+	n += to_file(fd, package->host);
+	n += to_file(fd, "/");
+	n += to_file(fd, package->path);
+	close(fd);
+	fd = create_file("version", 0640);
+	n += to_file(fd, package->version);
+	close(fd);
+	fd = create_file("build", 0640);
+	n += to_file(fd, package->build);
+	close(fd);
 	return err;
 }
 
