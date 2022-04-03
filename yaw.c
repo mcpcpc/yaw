@@ -307,8 +307,8 @@ package_create(char *name, char *source_url, char *version)
 {
 	char *host = source_url;
 	char *path = get_path(host);
-	if (err == 0) {
-		package = malloc(sizeof(pkg_t));
+	if (path != NULL) {
+		pkg package = malloc(sizeof(pkg_t));
 		package->name = name;
 		package->version = version;
 		package->host = host;
@@ -358,7 +358,7 @@ main(int argc, char **argv)
 			puts("Copyright (C) 2022, Michael Czigler");
 			break;
 		case 'n':
-			pkg package = package_create(package, argv[2], argv[3], argv[4]);
+			pkg package = package_create(argv[2], argv[3], argv[4]);
 			err += package_write(package);
 			err += package_print(package);
 			err += package_destroy(package);
