@@ -270,6 +270,7 @@ package_download(pkg package)
 int
 package_extract(pkg package)
 {
+	puts("package_extract()");
 	int err = 0;
 	return err;
 }
@@ -277,6 +278,7 @@ package_extract(pkg package)
 int
 package_write(pkg package)
 {
+	puts("package_write()");
 	int err = 0, n = 0;		
 	mkdir(package->name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);                         
 	chdir(package->name);
@@ -297,6 +299,7 @@ package_write(pkg package)
 pkg
 package_read(char *name)
 {
+	puts("package_read()");
 	int fd = 0;
 	pkg package;
 	return package;
@@ -305,6 +308,7 @@ package_read(char *name)
 pkg
 package_create(char *name, char *source_url, char *version)
 {
+	puts("package_create()");
 	char *host = source_url;
 	char *path = get_path(host);
 	pkg package = malloc(sizeof(pkg_t));
@@ -322,6 +326,7 @@ package_create(char *name, char *source_url, char *version)
 int
 package_destroy(pkg package)
 {
+	puts("package_destroy()");
 	int err = 0;
 	free(package);
 	return err;
